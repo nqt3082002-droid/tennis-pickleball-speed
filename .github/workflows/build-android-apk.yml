@@ -1,0 +1,58 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Create package.json if missing
+        run: |
+          if [ ! -f package.json ]; then
+            echo '{"name": "pickleball-app", "version": "1.0.0", "private": true}' > package.json
+          fi
+
+      - name: Install Capacitor Core and CLI
+        run: |
+          npm install --save @capacitor/core @capacitor/cli @capacitor/android
+
+      - name: Init Capacitor Configuration
+        run: |
+          npx cap init "Pickleball App" "com.nqt.pickleball" --web-dir "." --yes || true
+
+      - name: Add Android Platform
+        run: |
+          npx cap add android
+
+      - name: Build Android APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
