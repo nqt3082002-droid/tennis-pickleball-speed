@@ -1,0 +1,14 @@
+
+{
+  "name": "Tennis & Pickleball Speed Tracker",
+  "short_name": "Ball Speed",
+  "description": "Ứng dụng theo dõi và ước tính tốc độ bóng tennis và pickleball",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#101820",
+  "theme_color": "#101820",
+  "lang": "vi",
+  "categories": ["sports", "utilities"]
+}
