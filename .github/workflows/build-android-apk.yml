@@ -1,0 +1,33 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Generate Android Package using PWABuilder
+        uses: pwabuilder/pwabuilder-androidadditions@main
+        with:
+          webManifestUrl: 'https://raw.githubusercontent.com/${{ github.repository }}/main/manifest.webmanifest'
+          name: 'Pickleball App'
+          shortName: 'Pickleball'
+          packageId: 'com.nqt.pickleball'
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: |
+            android/app/build/outputs/apk/**/*.apk
+            **/*.apk
