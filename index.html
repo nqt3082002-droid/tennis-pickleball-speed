@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101d2d">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Ball Speed Tracker</title>
+<style>
+:root{color-scheme:dark;--bg:#101d2d;--panel:#1d3045;--cyan:#53d6ff;--muted:#aebfd0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font:16px system-ui,sans-serif;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom)}
+main{max-width:680px;margin:auto;padding:16px 0 28px}h1{font-size:22px;margin:8px 0}p{color:var(--muted);line-height:1.45}.panel{background:var(--panel);border-radius:16px;padding:16px;margin:12px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:120px}button,select,input{font:inherit;border:0;border-radius:12px;padding:13px;background:#29435e;color:#fff;width:100%}button.primary{background:#1677d2;font-weight:700}button:disabled{opacity:.45}
+video{width:100%;background:#050b12;border-radius:14px;max-height:52vh;object-fit:contain}canvas{display:none}.speed{text-align:center;font-size:54px;font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums}.unit{text-align:center;color:var(--muted)}.stat{background:#29435e;border-radius:12px;padding:12px}.stat small{display:block;color:var(--muted)}.stat b{font-size:22px}.status{font-size:13px;color:var(--muted);min-height:20px}.warn{font-size:13px;color:#ffd58a}.history{max-height:180px;overflow:auto}.history div{padding:8px;border-bottom:1px solid #38516a}
+</style>
+</head>
+<body><main>
+<h1>🏓 Ball Speed Tracker</h1>
+<p>Đo thử tốc độ bóng Tennis & Pickleball bằng camera điện thoại.</p>
+<section class="panel">
+ <div class="row">
+  <select id="sport" aria-label="Môn thể thao"><option value="Tennis">Tennis</option><option value="Pickleball">Pickleball</option></select>
+  <select id="unit" aria-label="Đơn vị"><option value="kmh">km/h</option><option value="mph">mph</option></select>
+ </div>
+ <div class="speed" id="speed">—</div><div class="unit" id="unitLabel">km/h · Chưa có kết quả</div>
+ <div class="row" style="margin-top:14px">
+  <div class="stat"><small>Tốc độ cao nhất</small><b id="best">—</b></div>
+  <div class="stat"><small>Số lần phát hiện</small><b id="count">0</b></div>
+ </div>
+</section>
+<section class="panel">
+ <video id="video" playsinline muted></video><canvas id="canvas"></canvas>
+ <div class="status" id="status">Nhấn “Bật camera” và cho phép truy cập camera.</div>
+ <div class="row" style="margin-top:10px">
+  <button class="primary" id="start">Bật camera</button>
+  <button id="stop" disabled>Dừng camera</button>
+ </div>
+ <div class="row" style="margin-top:10px">
+  <button class="primary" id="measure" disabled>Bắt đầu đo</button>
+  <button id="reset">Xóa kết quả</button>
+ </div>
+</section>
+<section class="panel">
+ <b>Hiệu chuẩn khoảng cách</b>
+ <p>Đặt hai điểm trên mặt sân cách nhau một khoảng đã biết, nhập khoảng cách đó. Để giảm sai số, hãy đặt điện thoại cố định và đo bóng di chuyển ngang trong cùng mặt phẳng với đoạn hiệu chuẩn.</p>
+ <label for="distance">Khoảng cách giữa hai điểm (mét)</label>
+ <input id="distance" type="number" min="0.5" max="30" step="0.1" value="3">
+ <label for="pixels">Khoảng cách ảnh giữa hai điểm (pixel)</label>
+ <input id="pixels" type="number" min="10" step="1" placeholder="Ví dụ: 240">
+ <button id="calibrate" style="margin-top:10px">Lưu hiệu chuẩn</button>
+ <p class="warn">Lưu ý: bản thử nghiệm theo dõi vùng màu vàng/xanh lá. Ánh sáng, màu sân, tốc độ màn trập, độ mờ chuyển động và phối cảnh có thể làm sai lệch kết quả. Không thay thế radar thể thao.</p>
+</section>
+<section class="panel"><b>Lịch sử đo</b><div class="history" id="history">Chưa có dữ liệu.</div></section>
+<p style="font-size:12px">Mẹo: dùng tripod, quay ngang sân, ánh sáng tốt, chọn bóng có màu nổi bật. Trình duyệt chỉ dùng được camera khi mở trang qua HTTPS hoặc localhost.</p>
+</main>
+<script src="app.js"></script>
+</body></html>
