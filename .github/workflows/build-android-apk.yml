@@ -1,0 +1,79 @@
+
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare app
+        run: |
+          mkdir -p www
+          cp index.html app.js manifest.webmanifest sw.js www/
+
+          cat > package.json <<'EOF'
+          {
+            "name": "tennis-pickleball-speed",
+            "version": "1.0.0",
+            "private": true
+          }
+          EOF
+
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.nqt.speedtracker",
+            "appName": "Ball Speed Tracker",
+            "webDir": "www"
+          }
+          EOF
+
+      - name: Install Capacitor
+        run: |
+          npm install @capacitor/core@6 @capacitor/android@6
+          npm install --save-dev @capacitor/cli@6
+
+      - name: Create Android project
+        run: npx cap add android
+
+      - name: Sync Android
+        run: npx cap sync android
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ball-speed-tracker-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
